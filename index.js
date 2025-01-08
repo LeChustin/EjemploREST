@@ -1,67 +1,84 @@
-// Importar las dependencias necesarias
-const express = require('express');
-const app = express();
-const PORT = 3000;
+const express = require('express'); 
+const app = express(); 
+const PUERTO = 3000; 
 
-// Middleware para parsear JSON
-app.use(express.json());
+app.use(express.json()); 
 
-// Simular una base de datos en memoria
-let resources = [];
+let inventarios = [{
+    id:1,
+    nombre:'Lapiz',
+    cantidad:23
+}]; 
 
-// Ruta POST para crear un nuevo recurso
-app.post('/resource', (req, res) => {
-    const { name, value } = req.body;
-    if (!name || !value) {
-        return res.status(400).json({ error: 'Los campos name y value son obligatorios.' });
+
+//http://localhost:3000/inventario
+
+// Ruta POST para crear un nuevo inventario
+app.post('/inventario', (req, res) => { 
+    const { nombre, cantidad } = req.body; 
+    if (!nombre || !cantidad) { 
+        return res.status(400).json({ error: 'Los campos nombre y cantidad son obligatorios.' });
     }
-    const newResource = {
-        id: resources.length + 1,
-        name,
-        value,
+    const nuevoInventario = {
+        id: inventarios.length + 1, 
+        nombre,
+        cantidad,
     };
-    resources.push(newResource);
-    res.status(201).json(newResource);
+    inventarios.push(nuevoInventario); 
+    res.status(201).json(nuevoInventario); 
 });
 
-// Ruta PUT para actualizar un recurso existente
-app.put('/resource/:id', (req, res) => {
-    const { id } = req.params;
-    const { name, value } = req.body;
-    const resource = resources.find(r => r.id === parseInt(id));
 
-    if (!resource) {
-        return res.status(404).json({ error: 'Recurso no encontrado.' });
+//http://localhost:3000/inventario/1
+
+// Ruta PUT para actualizar un inventario existente
+app.put('/inventario/:id', (req, res) => { 
+    const { id } = req.params; 
+    const { nombre, cantidad } = req.body; 
+    const inventario = inventarios.find(i => i.id === parseInt(id)); 
+
+    if (!inventario) { 
+        return res.status(404).json({ error: 'Inventario no encontrado.' });
     }
     
-    if (!name || !value) {
-        return res.status(400).json({ error: 'Los campos name y value son obligatorios.' });
+    if (!nombre || !cantidad) { 
+        return res.status(400).json({ error: 'Los campos nombre y cantidad son obligatorios.' });
     }
 
-    resource.name = name;
-    resource.value = value;
-    res.json(resource);
+    inventario.nombre = nombre; 
+    inventario.cantidad = cantidad; 
+    res.json(inventario); 
 });
 
-// Ruta DELETE para eliminar un recurso
-app.delete('/resource/:id', (req, res) => {
-    const { id } = req.params;
-    const index = resources.findIndex(r => r.id === parseInt(id));
 
-    if (index === -1) {
-        return res.status(404).json({ error: 'Recurso no encontrado.' });
+//http://localhost:3000/inventario/1
+
+// Ruta DELETE para eliminar un inventario
+app.delete('/inventario/:id', (req, res) => { 
+    const { id } = req.params; 
+    const indice = inventarios.findIndex(i => i.id === parseInt(id)); 
+
+    if (indice === -1) { 
+        return res.status(404).json({ error: 'Inventario no encontrado.' });
     }
 
-    resources.splice(index, 1);
-    res.status(204).send();
+    inventarios.splice(indice, 1); 
+    
+    res.status(200).json( 'Se eliminó correctamente.' ); 
 });
 
-// Ruta ALL para manejar métodos HTTP no definidos específicamente
-app.all('/resource', (req, res) => {
-    res.status(405).json({ error: 'Método no permitido en /resource.' });
-});
 
-// Iniciar el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+//http://localhost:3000/inventario
+
+// Manejo de métodos no permitidos en /inventario
+//app.all('/inventario', (req, res) => { 
+   // res.status(405).json({ error: 'Método no permitido en /inventario.' }); 
+//});
+app.get('/inventario',(req,res)=>{
+res.json(inventarios);
+
+}); 
+
+app.listen(PUERTO, () => { 
+    console.log(`Servidor ejecutándose en http://localhost:${PUERTO}`); 
 });
